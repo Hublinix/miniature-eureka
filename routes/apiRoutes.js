@@ -1,21 +1,21 @@
 const path = require('path')
 const fs = require('fs')
+const app = require('express').Router()
 
-module.exports = (app) => {
+// module.exports = (app) => {
 
-    app.get('/api/notes', (req, res) => {
-        res.returnFile(path.join(__dirname, '../db/db.json'));
+    app.get('/notes', (req, res) => {
+        let db = fs.readFileSync('db/db.json');
+        res.status(200).json(JSON.parse(db))
     });
 
-    app.post('/api/notes', (req, res) => {
+    app.post('/notes', (req, res) => {
         let db = fs.readFileSync('db/db.json');
         db = JSON.parse(db);
-        res.json(db);
 
         let userNote = {
             title: req.body.title,
             text: req.body.text,
-            id: userId(),
         };
         
         db.push(userNote)
@@ -23,11 +23,13 @@ module.exports = (app) => {
         res.json(db);
     });
 
-    app.delete('api/notes/:id', (req, res) => {
+    app.delete('/notes/:id', (req, res) => {
         let db = JSON.parse(fs.readFileSync('db/db.json'))
         let deleteNotes = db.filter(item => item.id !== req.params.id);
         fs.writeFileSync('db/db.json', JSON.stringify(deleteNotes));
         res.json(deleteNotes);
 
     });
-};
+// };
+
+module.exports = app;
